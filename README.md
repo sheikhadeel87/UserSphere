@@ -80,15 +80,10 @@ npm install
 
 **Backend** (`backend/.env`):
 ```env
-PORT=3000
-MONGO_URI=mongodb://localhost:27017/usersphere
-JWT_SECRET=your-secret-key
-FRONTEND_ORIGIN=http://localhost:5173
 ```
 
 **Frontend** (`frontend/.env`):
 ```env
-VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 ### 3. Run
