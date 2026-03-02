@@ -22,6 +22,7 @@ A full-stack MERN application for user management with JWT authentication, role-
 - Role-based access (Admin can delete users)
 - Interactive dashboard with statistics
 - Graphical data visualization (charts)
+- **AI-powered growth predictions** (30-day forecast)
 - City-wise user analytics
 - Search and filter functionality
 - Pagination
@@ -78,13 +79,20 @@ npm install
 
 ### 2. Environment Setup
 
-**Backend** (`backend/.env`):
-```env
-```
+**Backend Variables** (`backend/.env`):
 
-**Frontend** (`frontend/.env`):
-```env
-```
+| Variable | Description | Example Value |
+|:---------|:------------|:--------------|
+| `PORT` | The port the server runs on | `3000` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://127.0.0.1:27017/usersphere` |
+| `JWT_SECRET` | Secret key for JWT tokens (secret) | `your-secret-key` |
+| `FRONTEND_ORIGIN` | Frontend URL for CORS | `http://localhost:5173` |
+
+**Frontend Variables** (`frontend/.env`):
+
+| Variable | Description | Example Value |
+|:---------|:------------|:--------------|
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:3000/api` |
 
 ### 3. Run
 
@@ -116,6 +124,7 @@ npm run dev
 | DELETE | `/api/users/:id` | Delete user | Admin |
 | GET | `/api/users/stats` | City statistics | No |
 | GET | `/api/users/general-stats` | General stats | No |
+| GET | `/api/users/predictions` | AI growth predictions | No |
 
 See [`backend/API.md`](./backend/API.md) for full API documentation.
 
