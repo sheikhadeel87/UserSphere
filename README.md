@@ -124,15 +124,28 @@ See [`backend/API.md`](./backend/API.md) for full API documentation.
 ## Screenshots
 
 ### Dashboard
-- Statistics cards showing total users, cities, active users
-- Recent users table with actions
-- City-wise user distribution
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Dashboard Light](./screenshots/dashboard-lm.png) | ![Dashboard Dark](./screenshots/dashboard-dm.png) |
 
-### Features
-- Dark/Light theme toggle
-- Responsive sidebar navigation
-- Search with filters (name, age, status)
-- Pagination controls
+### Users Table
+![Users Table](./screenshots/userstable-lm.png)
+
+### Analytics
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Analytics Light](./screenshots/analytics-lm.png) | ![Analytics Dark](./screenshots/analytics-dm.png) |
+
+### Cities
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Cities Light](./screenshots/all-cities-lm.png) | ![Cities Dark](./screenshots/all-cities-dm.png) |
+
+### Reports (Dark Mode)
+![Reports](./screenshots/reports-dm.png)
+
+### Sign Up
+![Sign Up](./screenshots/signup-dm.png)
 
 ---
 
