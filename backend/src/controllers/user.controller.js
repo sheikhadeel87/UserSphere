@@ -40,7 +40,8 @@ async function getUsers(req, res, next) {
       sortObj[sortParam] = 1;
     }
     const [users, total] = await Promise.all([
-      User.find(filter).sort(sortObj).skip(skip).limit(safeLimit),
+      // User.find(filter).sort(sortObj).skip(skip).limit(safeLimit),
+      User.find(filter).sort(sortObj).collation({ locale: 'en', strength: 2 }).skip(skip).limit(safeLimit),
       User.countDocuments(filter)
     ]);
 
