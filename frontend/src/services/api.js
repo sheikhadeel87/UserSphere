@@ -38,3 +38,10 @@ export const usersApi = {
     return request('/users/stats');
   }
 };
+
+export const getPredictions = async () => {
+  const response = await fetch(`${API_BASE_URL}/users/predictions`, {
+    headers: getAuthHeader()
+  });
+  return response.json();
+};

@@ -7,9 +7,10 @@ import { useAuth } from "../context/AuthContext";
 const navItems = [
   { label: "Dashboard", icon: FaChartBar, path: "/" },
   { label: "Users", icon: FaUsers, path: "/users" },
-  { label: "Analytics", icon: FaChartLine, path: "/graphicalView" },
   { label: "Cities", icon: FaCity, path: "/cities" },
   { label: "Reports", icon: FaBox, path: "/reports" },
+  { label: "Analytics", icon: FaChartLine, path: "/graphicalView" },
+  {label: "Predictions", icon: FaChartLine, path: "/predictions"},
 ];
 
 function Navbar() {

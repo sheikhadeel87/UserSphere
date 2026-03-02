@@ -12,7 +12,8 @@ const {
   getGeneralStats,
   getUserNames,
   getUserByAge,
-  filterUsers
+  filterUsers,
+  getGrowthPrediction
 } = require('../controllers/user.controller');
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get('/stats', getUserStats);
 router.get('/general-stats', getGeneralStats);
 router.get('/names', getUserNames);
 router.get('/filter', filterUsers);
+router.get('/predictions', getGrowthPrediction);
 
 // Protected routes (require login)
 router.route('/')

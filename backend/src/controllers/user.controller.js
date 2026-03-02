@@ -266,6 +266,90 @@ async function filterUsers(req, res, next) {
   }
 }
 
+const getGrowthPrediction = async (req, res) => {
+  try {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+    // Get daily signups for last 30 days
+    const dailyData = await User.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Fill missing days with 0
+    const signupsByDay = {};
+    dailyData.forEach(d => signupsByDay[d._id] = d.count);
+
+    const historicalData = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split('T')[0];
+      historicalData.push({ date: dateStr, count: signupsByDay[dateStr] || 0 });
+    }
+
+    // Calculate linear regression (y = mx + b)
+    const n = historicalData.length;
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    historicalData.forEach((d, i) => {
+      sumX += i;
+      sumY += d.count;
+      sumXY += i * d.count;
+      sumX2 += i * i;
+    });
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    // Predict next 30 days
+    const dailyForecast = [];
+    let predictedTotal = 0;
+    for (let i = 1; i <= 30; i++) {
+      const date = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+      const predicted = Math.max(0, Math.round(slope * (n + i) + intercept));
+      predictedTotal += predicted;
+      dailyForecast.push({
+        date: date.toISOString().split('T')[0],
+        predicted
+      });
+    }
+
+    // Calculate confidence (based on variance)
+    const avgDaily = sumY / n;
+    const variance = historicalData.reduce((acc, d) => acc + Math.pow(d.count - avgDaily, 2), 0) / n;
+    const confidence = Math.max(0, Math.min(100, Math.round(100 - variance * 5)));
+
+    // Determine trend
+    const trend = slope > 0.1 ? 'increasing' : slope < -0.1 ? 'declining' : 'stable';
+
+    const totalUsers = await User.countDocuments();
+
+    res.json({
+      current: {
+        totalUsers,
+        last30DaysGrowth: Math.round(sumY),
+        avgDailySignups: +(sumY / n).toFixed(2)
+      },
+      prediction: {
+        next30Days: predictedTotal,
+        projectedTotal: totalUsers + predictedTotal,
+        growthTrend: trend,
+        confidenceScore: confidence
+      },
+      historicalData,
+      dailyForecast
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Prediction failed', details: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getUsers,
@@ -277,5 +361,6 @@ module.exports = {
   getGeneralStats,
   getUserNames,
   // getUserByAge,
-  filterUsers
+  filterUsers,
+  getGrowthPrediction
 };

@@ -6,9 +6,10 @@ import { FaChartBar, FaUsers, FaChartLine, FaCity, FaBox, FaCog, FaBell, FaUserC
 const navItems = [
   { label: "Dashboard", icon: <FaChartBar />, path: "/" },
   { label: "Users", icon: <FaUsers />, path: "/users" },
-  { label: "Analytics", icon: <FaChartLine />, path: "/graphicalView" },
   { label: "Cities", icon: <FaCity />, path: "/cities" },
   { label: "Reports", icon: <FaBox />, path: "/reports" },
+  { label: "Analytics", icon: <FaChartLine />, path: "/graphicalView" },
+  { label: "Predictions", icon: <FaChartLine />, path: "/predictions"},
 ];
 
 const managementItems = [
