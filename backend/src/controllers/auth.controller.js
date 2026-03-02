@@ -3,16 +3,36 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-async function register(req, res, next) {
+const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
-        const admin = await Admin.create({ name, email, password });
-        const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, { expiresIn: '7d' });
-        return res.status(201).json({ token, user: { id: admin._id, name: admin.name, email: admin.email, role: admin.role } });
+      const { name, email, password } = req.body;
+  
+      // Check if max admins reached (limit to 3)
+      const adminCount = await Admin.countDocuments();
+      if (adminCount >= 3) {
+        return res.status(403).json({ message: 'Registration closed. Maximum admin limit reached.' });
+      }
+  
+      // Check if admin already exists
+      const existingAdmin = await Admin.findOne({ email });
+      if (existingAdmin) {
+        return res.status(400).json({ message: 'Email already registered' });
+      }
+  
+      // Create admin
+      const admin = await Admin.create({ name, email, password });
+      
+      // Generate token
+      const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  
+      res.status(201).json({
+        token,
+        user: { id: admin._id, name: admin.name, email: admin.email, role: admin.role }
+      });
     } catch (error) {
-        return next(error);
+      res.status(500).json({ message: 'Registration failed', details: error.message });
     }
-};
+  };
 
 async function login(req, res, next) {
     try {
