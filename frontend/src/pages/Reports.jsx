@@ -88,8 +88,8 @@ function Reports() {
                     <ResponsiveContainer width="100%" height={250}>
                         <LineChart data={lineData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="city" />
-                            <YAxis />
+                            <XAxis dataKey="city" tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
+                            <YAxis tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
                             <Tooltip />
                             <Line
                                 type="monotone"
