@@ -205,7 +205,8 @@ async function getGeneralStats(req, res, next) {
       User.aggregate([{ $count: "totalUsers" }]),
       User.aggregate([
         { $group: { _id: "$city" } },
-        { $project: {
+        {
+          $project: {
             _id: 0,
             city: {
               $cond: [
@@ -266,35 +267,175 @@ async function filterUsers(req, res, next) {
   }
 }
 
+// const getGrowthPrediction = async (req, res) => {
+//   try {
+//     const now = new Date();
+//     const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+//     // Get daily signups for last 30 days
+//     const dailyData = await User.aggregate([
+//       { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+//       {
+//         $group: {
+//           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+//           count: { $sum: 1 }
+//         }
+//       },
+//       { $sort: { _id: 1 } }
+//     ]);
+
+//     // Fill missing days with 0
+//     const signupsByDay = {};
+//     dailyData.forEach(d => signupsByDay[d._id] = d.count);
+
+//     const historicalData = [];
+//     for (let i = 29; i >= 0; i--) {
+//       const date = new Date(now - i * 24 * 60 * 60 * 1000);
+//       const dateStr = date.toISOString().split('T')[0];
+//       historicalData.push({ date: dateStr, count: signupsByDay[dateStr] || 0 });
+//     }
+
+//     // Calculate linear regression (y = mx + b)
+//     const n = historicalData.length;
+//     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+//     historicalData.forEach((d, i) => {
+//       sumX += i;
+//       sumY += d.count;
+//       sumXY += i * d.count;
+//       sumX2 += i * i;
+//     });
+
+//     const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+//     const intercept = (sumY - slope * sumX) / n;
+
+//     // Predict next 30 days
+//     const dailyForecast = [];
+//     let predictedTotal = 0;
+//     for (let i = 1; i <= 30; i++) {
+//       const date = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+//       const predicted = Math.max(0, Math.round(slope * (n + i) + intercept));
+//       predictedTotal += predicted;
+//       dailyForecast.push({
+//         date: date.toISOString().split('T')[0],
+//         predicted
+//       });
+//     }
+
+//     // Calculate confidence (based on variance)
+//     const avgDaily = sumY / n;
+//     const variance = historicalData.reduce((acc, d) => acc + Math.pow(d.count - avgDaily, 2), 0) / n;
+//     const confidence = Math.max(0, Math.min(100, Math.round(100 - variance * 5)));
+
+//     // Determine trend
+//     const trend = slope > 0.1 ? 'increasing' : slope < -0.1 ? 'declining' : 'stable';
+
+//     const totalUsers = await User.countDocuments();
+
+//     res.json({
+//       current: {
+//         totalUsers,
+//         last30DaysGrowth: Math.round(sumY),
+//         avgDailySignups: +(sumY / n).toFixed(2)
+//       },
+//       prediction: {
+//         next30Days: predictedTotal,
+//         projectedTotal: totalUsers + predictedTotal,
+//         growthTrend: trend,
+//         confidenceScore: confidence
+//       },
+//       historicalData,
+//       dailyForecast
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Prediction failed', details: error.message });
+//   }
+// };
+
 const getGrowthPrediction = async (req, res) => {
   try {
+    const { filterType, month, startDate, endDate, forecastDays: forecastDaysParam } = req.query;
     const now = new Date();
-    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    let start, end;
 
-    // Get daily signups for last 30 days
+    switch (filterType) {
+      case 'last7':
+        start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        end = new Date(now);
+        break;
+
+      case 'last30':
+        start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        end = new Date(now);
+        break;
+
+      case 'thisMonth':
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now);
+        break;
+
+      case 'month':
+        if (!month || !/^\d{4}-\d{1,2}$/.test(month)) {
+          return res.status(400).json({ message: 'For filterType=month, provide month as YYYY-MM (e.g. 2025-12)' });
+        }
+        const [y, m] = month.split('-').map(Number);
+        start = new Date(y, m - 1, 1);
+        end = new Date(y, m, 0);
+        break;
+
+      case 'custom':
+        if (!startDate || !endDate) {
+          return res.status(400).json({ message: 'For filterType=custom, provide startDate and endDate (ISO date strings)' });
+        }
+        start = new Date(startDate);
+        end = new Date(endDate);
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          return res.status(400).json({ message: 'Invalid startDate or endDate' });
+        }
+        if (start > end) {
+          return res.status(400).json({ message: 'startDate must be before endDate' });
+        }
+        break;
+
+      default:
+        start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        end = new Date(now);
+    }
+
+    const forecastDays = Math.min(Math.max(Number(forecastDaysParam) || 30, 1), 90);
+
     const dailyData = await User.aggregate([
-      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end }
+        }
+      },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' }
+          },
           count: { $sum: 1 }
         }
       },
       { $sort: { _id: 1 } }
     ]);
 
-    // Fill missing days with 0
     const signupsByDay = {};
-    dailyData.forEach(d => signupsByDay[d._id] = d.count);
+    dailyData.forEach(d => { signupsByDay[d._id] = d.count; });
+
+    const diffMs = end.getTime() - start.getTime();
+    const totalDays = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)) + 1);
 
     const historicalData = [];
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(now - i * 24 * 60 * 60 * 1000);
+    for (let i = 0; i < totalDays; i++) {
+      const date = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
       const dateStr = date.toISOString().split('T')[0];
-      historicalData.push({ date: dateStr, count: signupsByDay[dateStr] || 0 });
+      historicalData.push({
+        date: dateStr,
+        count: signupsByDay[dateStr] || 0
+      });
     }
 
-    // Calculate linear regression (y = mx + b)
     const n = historicalData.length;
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     historicalData.forEach((d, i) => {
@@ -304,13 +445,13 @@ const getGrowthPrediction = async (req, res) => {
       sumX2 += i * i;
     });
 
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
+    const denominator = n * sumX2 - sumX * sumX;
+    const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+    const intercept = n === 0 ? 0 : (sumY - slope * sumX) / n;
 
-    // Predict next 30 days
     const dailyForecast = [];
     let predictedTotal = 0;
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= forecastDays; i++) {
       const date = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
       const predicted = Math.max(0, Math.round(slope * (n + i) + intercept));
       predictedTotal += predicted;
@@ -320,24 +461,28 @@ const getGrowthPrediction = async (req, res) => {
       });
     }
 
-    // Calculate confidence (based on variance)
-    const avgDaily = sumY / n;
-    const variance = historicalData.reduce((acc, d) => acc + Math.pow(d.count - avgDaily, 2), 0) / n;
+    const avgDaily = n === 0 ? 0 : sumY / n;
+    const variance = n === 0 ? 0 : historicalData.reduce((acc, d) => acc + Math.pow(d.count - avgDaily, 2), 0) / n;
     const confidence = Math.max(0, Math.min(100, Math.round(100 - variance * 5)));
-
-    // Determine trend
     const trend = slope > 0.1 ? 'increasing' : slope < -0.1 ? 'declining' : 'stable';
 
     const totalUsers = await User.countDocuments();
 
     res.json({
+      range: {
+        filterType: filterType || 'last30',
+        start: start.toISOString().split('T')[0],
+        end: end.toISOString().split('T')[0],
+        days: n,
+        forecastDays
+      },
       current: {
         totalUsers,
-        last30DaysGrowth: Math.round(sumY),
-        avgDailySignups: +(sumY / n).toFixed(2)
+        periodGrowth: Math.round(sumY),
+        avgDailySignups: +(avgDaily).toFixed(2)
       },
       prediction: {
-        next30Days: predictedTotal,
+        nextPeriod: predictedTotal,
         projectedTotal: totalUsers + predictedTotal,
         growthTrend: trend,
         confidenceScore: confidence

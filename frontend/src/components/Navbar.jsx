@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { FaChartBar, FaUsers, FaChartLine, FaCity, FaBox, FaBars, FaTimes, FaSun, FaMoon, FaSignOutAlt } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -10,37 +10,34 @@ const navItems = [
   { label: "Cities", icon: FaCity, path: "/cities" },
   { label: "Reports", icon: FaBox, path: "/reports" },
   { label: "Analytics", icon: FaChartLine, path: "/graphicalView" },
-  {label: "Predictions", icon: FaChartLine, path: "/predictions"},
+  { label: "Predictions", icon: FaChartLine, path: "/predictions" },
 ];
 
-function Navbar() {
+function Navbar({ onMenuToggle }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const current = navItems.find((item) => item.path === location.pathname) || navItems[0];
+  const CurrentIcon = current.icon;
+
+  const handleToggle = () => {
+    setMobileOpen((o) => !o);
+    onMenuToggle?.();
+  };
 
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* Brand */}
-        {/* <NavLink to="/" className="navbar-brand" onClick={() => setMobileOpen(false)}>
-          <span className="navbar-brand-icon">◇</span>
-          <span className="navbar-brand-text">Users CRUD</span>
-        </NavLink> */}
-
-        {/* Desktop nav */}
-        <nav className="navbar-nav">
-          {navItems.map(({ label, icon: Icon, path }) => (
-            <NavLink
-              key={path}
-              to={path}
-              className={({ isActive }) => `navbar-link ${isActive ? "navbar-link-active" : ""}`}
-            >
-              <Icon className="navbar-link-icon" />
-              <span>{label}</span>
-            </NavLink>
-          ))}
+        {/* Current page only (sidebar has the rest) */}
+        <nav className="navbar-nav navbar-nav-current">
+          <span className="navbar-current-page">
+            <CurrentIcon className="navbar-link-icon" />
+            <span>{current.label}</span>
+          </span>
         </nav>
 
         {/* Right: theme toggle and profile */}
@@ -137,30 +134,13 @@ function Navbar() {
           <button
             type="button"
             className="navbar-toggle"
-            onClick={() => setMobileOpen((o) => !o)}
+            onClick={handleToggle}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className={`navbar-mobile ${mobileOpen ? "navbar-mobile-open" : ""}`}>
-        <nav className="navbar-mobile-nav">
-          {navItems.map(({ label, icon: Icon, path }) => (
-            <NavLink
-              key={path}
-              to={path}
-              className={({ isActive }) => `navbar-mobile-link ${isActive ? "navbar-mobile-link-active" : ""}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Icon className="navbar-mobile-link-icon" />
-              <span>{label}</span>
-            </NavLink>
-          ))}
-        </nav>
       </div>
     </header>
   );

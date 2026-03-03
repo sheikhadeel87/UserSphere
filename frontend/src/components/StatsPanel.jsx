@@ -54,7 +54,7 @@ function StatsPanel({ stats, totalUsers, totalCities, cityNames }) {
               <div className="chart-bar" style={{ height: '75%', flexGrow: 1, background: '#d5deda', borderRadius: 2 }}></div>
               <div className="chart-bar" style={{ height: '85%', flexGrow: 1, background: '#d5deda', borderRadius: 2 }}></div>
             </div>
-            <div style={{ marginTop: 16, fontSize: 13, color: '#555' }}>
+            <div className="stats-panel-city-info" style={{ marginTop: 16, fontSize: 13 }}>
               <span>Total Cities: {totalCities}</span><br />
               <span>City Names: {cityNames && cityNames.length > 0 ? cityNames.join(', ') : 'None'}</span>
             </div>
@@ -80,16 +80,16 @@ function StatsPanel({ stats, totalUsers, totalCities, cityNames }) {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Users</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#222' }}>{item.totalUsers}</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Users</div>
+                        <div className="stats-panel-card-value" style={{ fontSize: 16, fontWeight: 700 }}>{item.totalUsers}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Active</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Active</div>
                         <div style={{ fontSize: 16, fontWeight: 700, color: accent.color }}>{item.activeUsers}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Avg Age</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#222' }}>{item.averageAge ?? 0}</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Avg Age</div>
+                        <div className="stats-panel-card-value" style={{ fontSize: 16, fontWeight: 700 }}>{item.averageAge ?? 0}</div>
                       </div>
                     </div>
                     <div style={{ width: '100%', marginTop: 12, marginBottom: 2 }}>
@@ -121,16 +121,16 @@ function StatsPanel({ stats, totalUsers, totalCities, cityNames }) {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Users</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#222' }}>{item.totalUsers}</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Users</div>
+                        <div className="stats-panel-card-value" style={{ fontSize: 16, fontWeight: 700 }}>{item.totalUsers}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Active</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Active</div>
                         <div style={{ fontSize: 16, fontWeight: 700, color: accent.color }}>{item.activeUsers}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 12, color: '#bbb', fontWeight: 600, textTransform: 'uppercase' }}>Avg Age</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#222' }}>{item.averageAge ?? 0}</div>
+                        <div className="stats-panel-card-label" style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase' }}>Avg Age</div>
+                        <div className="stats-panel-card-value" style={{ fontSize: 16, fontWeight: 700 }}>{item.averageAge ?? 0}</div>
                       </div>
                     </div>
                     <div style={{ width: '100%', marginTop: 12, marginBottom: 2 }}>

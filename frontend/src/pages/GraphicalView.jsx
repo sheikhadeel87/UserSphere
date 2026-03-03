@@ -95,13 +95,14 @@ function GraphicalView() {
         <div style={{ flex: 1, minWidth: 0 }}>
           <h2 className="analytics-title" style={{ fontSize: 28 }}>📊 User Analytics Dashboard</h2>
           <div className="graphical-charts-grid" style={gridStyle}>
+
             {/* 1️⃣ Bar Chart */}
             <div className="graphical-chart-card" style={chartCardStyle}>
           <h2 style={{marginBottom: 12}}>City-wise Users</h2>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={barData} margin={{ top: 16, right: 16, left: 0, bottom: 0 }}>
-              <XAxis dataKey="city" tick={{fontWeight: 600}} />
-              <YAxis />
+              <XAxis dataKey="city" tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
+              <YAxis tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="totalUsers" fill="#8884d8" name="Total Users" radius={[8,8,0,0]} />
@@ -115,8 +116,8 @@ function GraphicalView() {
           <h2 style={{marginBottom: 12}}>Active vs Inactive per City</h2>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={stackedBarData} margin={{ top: 16, right: 16, left: 0, bottom: 0 }}>
-              <XAxis dataKey="city" tick={{fontWeight: 600}} />
-              <YAxis />
+              <XAxis dataKey="city" tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
+              <YAxis tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="activeUsers" stackId="a" fill="#0284c7" name="Active" radius={[8,8,0,0]} />
@@ -179,8 +180,8 @@ function GraphicalView() {
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={lineData} margin={{ top: 16, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="city" tick={{fontWeight: 600}} />
-              <YAxis />
+              <XAxis dataKey="city" tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
+              <YAxis tick={{ fontWeight: 100, fill: 'var(--muted)' }} />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="averageAge" stroke="#0ea5e9" strokeWidth={3} dot={{ r: 5 }} name="Average Age" />
