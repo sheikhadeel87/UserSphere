@@ -101,7 +101,7 @@
 }
 
 .navbar-link:hover {
-  color: #0ea5e9;
+  color: var(--accent);
   background: rgba(14, 165, 233, 0.08);
 }
 
@@ -119,6 +119,20 @@
 .navbar-link-icon {
   font-size: 0.95rem;
   opacity: 0.9;
+}
+
+.navbar-nav-current {
+  flex: 1;
+}
+
+.navbar-current-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .navbar-actions {
@@ -139,7 +153,7 @@
   border-radius: 8px;
 }
 .navbar-badge:hover {
-  color: #0ea5e9;
+  color: var(--accent);
   background: rgba(14, 165, 233, 0.08);
 }
 
@@ -161,7 +175,7 @@
 
 .navbar-toggle:hover {
   background: rgba(14, 165, 233, 0.12);
-  color: #0ea5e9;
+  color: var(--accent);
 }
 
 /* Mobile menu */
@@ -222,9 +236,8 @@
 }
 
 @media (max-width: 900px) {
-  .navbar-nav,
   .navbar-actions {
-     display: none !important; 
+    display: none !important;
   }
 
   .navbar-mobile-controls {
@@ -233,10 +246,6 @@
 
   .navbar-toggle {
     display: flex;
-  }
-
-  .navbar-mobile {
-    display: block;
   }
 
   /* Hide sidebar collapse button on small screens – only navbar hamburger is used */
@@ -346,6 +355,18 @@
 
 .stats-panel-cta-btn-second {
   margin-top: 12px;
+}
+
+.stats-panel-city-info {
+  color: #555;
+}
+
+.stats-panel-card-label {
+  color: #bbb;
+}
+
+.stats-panel-card-value {
+  color: #222;
 }
 
 @media (max-width: 992px) {
@@ -532,6 +553,20 @@
   background: #334155;
 }
 
+[data-theme="dark"] .stats-panel-city-info {
+  color: rgb(225, 231, 239);
+}
+
+[data-theme="dark"] .stats-panel-card-label,
+[data-theme="dark"] .stats-panel-card-value {
+  color: rgb(225, 231, 239);
+}
+
+[data-theme="dark"] .recharts-yAxis .recharts-cartesian-axis-tick text,
+[data-theme="dark"] .recharts-xAxis .recharts-cartesian-axis-tick text {
+  fill: rgb(225, 231, 239);
+}
+
 /* [data-theme="dark"] .stats-panel-cta-btn,
 [data-theme="dark"] .searchbar-btn,
 [data-theme="dark"] .searchbar-toolbar .searchbar-btn,
@@ -643,6 +678,12 @@
   overflow-x: auto;
   margin-bottom: 32px;
   }
+
+/* Recharts axis tick labels: light mode */
+.recharts-yAxis .recharts-cartesian-axis-tick text,
+.recharts-xAxis .recharts-cartesian-axis-tick text {
+  fill: #555;
+}
 
   @media (max-width: 900px) {
     .reports-container {
@@ -893,7 +934,13 @@
 
 .stat-title {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--muted);
+}
+
+/* Keep stat title visible on card hover (blue gradient) */
+.main-card .stat-card:hover .stat-title,
+.reports-stat-cards .stat-card:hover .stat-title {
+  color: #fff;
 }
 
 .stat-value {
@@ -936,13 +983,13 @@
   --bg: #0f172a;
   --card: #1e293b;
   --line: #334155;
-  --text: #94a3b8;
-  --muted: #64748b;
-  --accent: #0ea5e9;
-  --accent-light: #38bdf8;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-light: #7dd3fc;
   --danger: #f43f5e;
-  --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  --btn-gradient-hover: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --btn-gradient: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+  --btn-gradient-hover: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   --body-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   --sidebar-bg: #1e293b;
   --sidebar-border: #334155;
@@ -1436,6 +1483,12 @@ select.searchbar-input option:hover {
   font-size: 12px;
   color: var(--muted);
   margin-bottom: 8px;
+}
+
+/* Keep stat label visible on card hover (blue gradient) */
+.predictions-stats .stat-card:hover .stat-label,
+.predictions-stats .stat-card:hover .stat-value {
+  color: #fff;
 }
 
 .stat-value {

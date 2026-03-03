@@ -41,7 +41,7 @@ function DashboardLayout({ children }) {
           overflowX: "hidden",
         }}
       >
-        <Navbar />
+        <Navbar onMenuToggle={() => setCollapsed((c) => !c)} />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", overflowX: "hidden" }}>
           <div
             className="dashboard-content"

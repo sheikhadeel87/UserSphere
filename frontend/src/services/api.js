@@ -39,9 +39,12 @@ export const usersApi = {
   }
 };
 
-export const getPredictions = async () => {
-  const response = await fetch(`${API_BASE_URL}/users/predictions`, {
+export const getPredictions = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${API_BASE_URL}/users/predictions${query ? `?${query}` : ''}`, {
     headers: getAuthHeader()
   });
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to fetch predictions');
+  return data;
 };
